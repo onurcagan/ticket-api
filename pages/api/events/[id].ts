@@ -2,16 +2,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { events } from '../../../mockDatabase/database'
 import * as fs from 'fs'
-
-export type Event = {
-  id: number
-  name: string
-  date: string
-  time: string
-  location: string
-  tickets_available: number
-  ticket_price: number
-}
+import { Event } from '../../../src/types/apiTypes'
+import { sanitize } from '../../../src/helpers/sanitize'
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query
@@ -23,18 +15,17 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
   const index = events.indexOf(result)
 
-  const resultIndex = events.indexOf(result)
-  console.log(resultIndex)
-
   if (req.method === 'GET') {
     res.status(200).json(result)
     return
   }
 
   if (req.method === 'PATCH') {
+    const currentEvent = events[index]
     const patchedEvent: Event = {
-      id: events[index].id,
+      ...currentEvent,
       ...req.body,
+      updated_at: new Date().toISOString(),
     }
     events[index] = patchedEvent
     res.status(201).json(patchedEvent)
