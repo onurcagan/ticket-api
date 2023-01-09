@@ -9,3 +9,7 @@ export type Event = {
   created_at: string
   updated_at: string
 }
+
+export type Pick<T, K extends keyof T> = {
+  [P in K]: T[P]
+}
