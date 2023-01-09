@@ -2,16 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { events } from '../../../mockDatabase/database'
 import * as fs from 'fs'
-
-export type Event = {
-  id: number
-  name: string
-  date: string
-  time: string
-  location: string
-  tickets_available: number
-  ticket_price: number
-}
+import { Event } from '../../../src/types/apiTypes'
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
@@ -30,6 +21,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     const newEvent: Event = {
       id: Date.now(),
       ...req.body,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     }
     events.push(newEvent)
     res.status(201).json(newEvent)
