@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { events } from '../../../mockDatabase/database'
 import * as fs from 'fs'
@@ -21,10 +20,20 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   if (req.method === 'PATCH') {
+    const body = sanitize(req)
+    if (!body || !body.name || !body.date || !body.time || !body.location || !body.tickets_available || !body.ticket_price) {
+      res
+        .status(400)
+        .send(
+          "Bad request: Invalid request body. allowedKeys = ['name', 'date', 'time', 'location', 'tickets_available', 'ticket_price']",
+        )
+      return
+    }
+
     const currentEvent = events[index]
     const patchedEvent: Event = {
       ...currentEvent,
-      ...req.body,
+      ...body,
       updated_at: new Date().toISOString(),
     }
     events[index] = patchedEvent

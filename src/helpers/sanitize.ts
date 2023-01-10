@@ -1,19 +1,11 @@
 import { NextApiRequest } from 'next'
 import { Event, Pick } from '../types/apiTypes'
 
-export function sanitize(req: NextApiRequest): Partial<Event> {
-  if (
-    !req.body ||
-    !req.body.name ||
-    !req.body.date ||
-    !req.body.time ||
-    !req.body.location ||
-    !req.body.tickets_available ||
-    !req.body.ticket_price
-  ) {
-    throw new Error('Bad request: Invalid request body')
+export function sanitize(req: NextApiRequest): Partial<Event> | undefined {
+  const event = JSON.parse(req.body)
+  if (!event || !event.name || !event.date || !event.time || !event.location || !event.tickets_available || !event.ticket_price) {
+    return undefined
   }
-  const event = req.body
   const allowedKeys = ['name', 'date', 'time', 'location', 'tickets_available', 'ticket_price']
   const sanitizedEvent = pick(event, allowedKeys)
   return sanitizedEvent
